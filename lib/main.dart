@@ -1,7 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+// ignore_for_file: prefer_const_constructors
 
-import 'app/views/auth/signup_view.dart';
+import 'package:flutter/material.dart';
+// import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+
+import 'app/data/constants/app_string.dart';
+import 'app/views/auth/sign up/signup_view.dart';
+import 'app/views/auth/signin_view.dart';
+import 'app/views/dashboard/dashboard/dashboard_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,16 +20,50 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      builder: (context, _) => MaterialApp(
-        title: 'Flutter Demo',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: const SignupView(),
+    return GetMaterialApp(
+      title: 'Flutter Demo',
+      defaultTransition: Transition.noTransition,
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
-      designSize: const Size(360, 640),
+      home: SplashScreen(),
+    );
+  }
+}
+
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({Key? key}) : super(key: key);
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    Future.delayed(Duration(microseconds: 300)).then((value) => checkLogin());
+
+    super.initState();
+  }
+
+  void checkLogin() {
+    bool loggedIn = GetStorage().read(LOGGED_IN) ?? false;
+    if (loggedIn) {
+      Get.offAll(() => DashboardView());
+    } else {
+      Get.offAll(() => SigninView());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Image.asset('assets/images/logo.png', width: 100),
+        ),
+      ),
     );
   }
 }
